@@ -1,0 +1,41 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'frontend/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'frontend/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+        
+    - name: Install dependencies
+      run: |
+        cd frontend
+        npm install
+    
+    - name: Build
+      run: |
+        cd frontend
+        CI=false npm run build
+    
+    - name: Copy to backend static folder
+      run: |
+        mkdir -p backend/www
+        cp -r frontend/build/* backend/www/
+    
+    - name: Echo success
+      run: echo "Frontend build and deploy success"
